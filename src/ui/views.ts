@@ -18,5 +18,5 @@ export const Views = {
     },
     get towerList() {
         return assertElementIsExactHtml(document.querySelector('#towers'), HTMLDivElement);
-    }
+    },
 }

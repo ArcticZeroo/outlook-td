@@ -59,7 +59,7 @@ html, body {
     border-radius: var(--padding);
 }
 
-#sidebar {
+.sidebar {
     background: var(--color-sidebar);
     display: flex;
     flex-direction: column;
@@ -72,14 +72,14 @@ html, body {
     background: var(--color-sidebar-area);
 }
 
-#sidebar #time {
+#time {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--padding);
 }
 
-#sidebar #time-speed-controls {
+#time-speed-controls {
     display: flex;
     gap: var(--padding);
 }
