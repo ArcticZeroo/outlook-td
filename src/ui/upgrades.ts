@@ -79,7 +79,6 @@ export const registerUpgradesView = () => {
 
 		const nextTierCost = getTierCost(nextTierIndex);
 		const costElement = document.createElement('span');
-		// todo: cost
 		costElement.innerText = `Cost: 🪙 ${nextTierCost}`;
 		nextTierElement.appendChild(costElement);
 
