@@ -16,7 +16,7 @@ export const mailEnemy = (initialTileIndex?: number) => new EnemyPathMover({
 });
 
 export const planeEnemy = (initialTileIndex?: number) => new EnemyPathMover({
-	moveSpeed:     1.25,
+	moveSpeed:     1.1,
 	lives:         5, // quick email but high priority
 	health:        8,
 	currencyValue: 10,
