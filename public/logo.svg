@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256"
+   height="255.99998"
+   viewBox="0 0 67.733334 67.733329"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="logo.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="outlook td logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="2.0899411"
+     inkscape:cx="93.304066"
+     inkscape:cy="115.31426"
+     inkscape:window-width="1718"
+     inkscape:window-height="1360"
+     inkscape:window-x="2553"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g6" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g6"
+       transform="matrix(1.0629849,0,0,1.0629849,0.45200705,-5.1558077)"
+       inkscape:label="icon">
+      <g
+         id="g5"
+         transform="matrix(0.77047452,0,0,0.77047452,2.10828,12.519621)"
+         inkscape:label="envelope">
+        <path
+           id="path1"
+           style="fill:#0d8cd3;fill-opacity:1;stroke-width:0.264583"
+           inkscape:label="envelope-top"
+           d="M 38.050119,8.6721248 9.1854789,24.559884 38.050119,45.64698 66.914088,24.559884 Z" />
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.90143;stroke-dasharray:none;stroke-opacity:1"
+           id="rect6"
+           width="38.766186"
+           height="26.914783"
+           x="18.666742"
+           y="21.64604"
+           inkscape:label="mail" />
+        <path
+           id="rect1"
+           style="fill:#00a3de;fill-opacity:1;stroke-width:0.252316"
+           inkscape:label="envelope-body"
+           d="M 9.1854789,24.559884 V 56.336072 H 66.914088 V 24.559884 L 38.050119,45.64698 Z" />
+      </g>
+      <g
+         id="g4"
+         transform="matrix(1.0964816,-0.29380136,0.29380136,1.0964816,-95.717548,-90.97131)"
+         inkscape:label="shield"
+         style="display:inline">
+        <path
+           id="rect2"
+           style="fill:#00334f;fill-opacity:1;stroke-width:0.264583"
+           d="m 58.868241,130.98322 -7.4998,3.75016 v 15.00012 l 7.4998,3.74964 7.499801,-3.74964 v -15.00012 z"
+           inkscape:label="shield-bg" />
+        <circle
+           style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.465;stroke-dasharray:none;stroke-opacity:1"
+           id="path2"
+           cx="58.868286"
+           cy="142.23328"
+           r="4.8787656"
+           inkscape:label="o" />
+      </g>
+      <path
+         id="rect3"
+         style="display:inline;fill:#00334f;fill-opacity:1;stroke:none;stroke-width:1.22503;stroke-dasharray:none;stroke-opacity:1"
+         d="m 57.875704,13.516865 -2.7619,1.794521 -9.051062,32.064615 -4.151184,-1.171779 -0.647047,2.292259 5.094378,1.438016 -2.088473,7.3987 2.292259,0.647048 2.088474,-7.3987 5.093962,1.437905 0.647047,-2.292259 -4.1512,-1.171776 9.051069,-32.064625 z"
+         inkscape:label="sword" />
+    </g>
+  </g>
+</svg>

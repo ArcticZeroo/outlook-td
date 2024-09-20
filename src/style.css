@@ -1,0 +1,107 @@
+:root {
+    --color-background: #567283;
+    --color-sidebar: #7a5b4f;
+    --color-sidebar-area: #8f8f8f;
+    --color-sidebar-area-outline: #c4c4c4;
+    --padding: 0.5rem;
+}
+
+* {
+    font-family: sans-serif;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background: var(--color-background);
+}
+
+.subtitle {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.flex {
+    display: flex;
+    gap: var(--padding);
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.rounded-container {
+    gap: var(--padding);
+    border-radius: var(--padding);
+    padding: var(--padding);
+}
+
+#game-canvas {
+    border-radius: var(--padding);
+}
+
+#sidebar {
+    background: var(--color-sidebar);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-area {
+    display: flex;
+    flex-direction: column;
+    border: 0.25rem solid var(--color-sidebar-area-outline);
+    background: var(--color-sidebar-area);
+}
+
+#sidebar #time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--padding);
+}
+
+#sidebar #time-speed-controls {
+    display: flex;
+    gap: var(--padding);
+}
+
+.tower {
+    display: flex;
+    gap: var(--padding);
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.125s ease;
+}
+
+.tower-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.tower-description {
+    max-width: 16rem;
+    white-space: break-spaces;
+}
+
+.tower.selected {
+    background: #f5da86;
+}
