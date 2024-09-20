@@ -15,25 +15,25 @@ interface IAppleCannonTowerTier extends ITowerTierBase {
 
 const TIER_VALUES: Array<IAppleCannonTowerTier> = [
 	{
-		damage:                3,
-		range:                 1,
-		secondsBetweenBullets: 5,
-		splashRadiusTiles:     1,
+		damage:                4,
+		range:                 1.25,
+		secondsBetweenBullets: 4.25,
+		splashRadiusTiles:     0.75,
 		appleMoveSpeed:        3,
 	},
 	{
-		damage:                4,
-		range:                 2,
+		damage:                5,
+		range:                 1.5,
 		secondsBetweenBullets: 4,
-		splashRadiusTiles:     2,
-		appleMoveSpeed:        4,
+		splashRadiusTiles:     1.25,
+		appleMoveSpeed:        4.5,
 	},
 	{
-		damage:                4,
+		damage:                6,
 		range:                 2,
 		secondsBetweenBullets: 3,
-		splashRadiusTiles:     3,
-		appleMoveSpeed:        5,
+		splashRadiusTiles:     2,
+		appleMoveSpeed:        6,
 	}
 ];
 

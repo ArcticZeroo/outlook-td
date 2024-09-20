@@ -7,17 +7,17 @@ const TIER_VALUES: ITowerTierBase[] = [
 	{
 		damage:   0,
 		range:    1,
-		secondsBetweenBullets: 5
+		secondsBetweenBullets: 6
 	},
 	{
 		damage:   0,
-		range:    2,
-		secondsBetweenBullets: 4
+		range:    1.5,
+		secondsBetweenBullets: 5.5
 	},
 	{
 		damage:   1,
 		range:    2,
-		secondsBetweenBullets: 3.5
+		secondsBetweenBullets: 5
 	},
 ]
 

@@ -34,6 +34,10 @@ export class ValueListener<T> {
 	}
 
 	set value(value: T) {
+		if (this.#value === value) {
+			return;
+		}
+
 		const oldValue = this.#value;
 		this.#value = value;
 		this.#listeners.notify(value, oldValue);
@@ -192,7 +196,6 @@ export const multiDrive = (callback: () => void, notifiers: Array<ValueListener<
 
 	for (const listener of notifiers) {
 		listener.addListener(() => {
-			console.log(listener, 'notified');
 			callback();
 		});
 	}

@@ -22,7 +22,8 @@ const createTimeButton = (id: string, value: number) => {
 const timeScales: Array<number> = [
     0,
     1,
-    2
+    2,
+    5
 ];
 
 export const registerTimeButtons = () => {

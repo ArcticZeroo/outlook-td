@@ -1,12 +1,14 @@
 import { IRenderObject } from '../models/render.ts';
 import { GRID_RENDER_OBJECT } from '../objects/grid.ts';
 import { LivingRenderObject } from '../objects/object.ts';
+import { WAVE_OBJECT } from '../objects/wave.ts';
 
 const DYNAMIC_RENDER_OBJECTS: IRenderObject[] = [];
 
 export const getRenderObjects = (): ReadonlyArray<IRenderObject> => [
     GRID_RENDER_OBJECT,
-    ...DYNAMIC_RENDER_OBJECTS
+    ...DYNAMIC_RENDER_OBJECTS,
+    WAVE_OBJECT
 ];
 
 export const addRenderObject = (object: IRenderObject): void => {

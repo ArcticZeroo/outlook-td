@@ -14,35 +14,35 @@ export const towers: ITowerDisplayData[] = [
     {
         name:        'Typewriter',
         description: 'A basic tower that sends many short but fast-paced email replies.',
-        cost:        75,
+        cost:        90,
         iconPath:    TypewriterSvg,
         constructor: TypewriterTower
     },
     {
-        name:        'Spear Phisherman',
-        description: 'A tower that sends a spear to pierce through multiple enemies.',
-        cost:        90,
-        iconPath:    SpearPhishermanSvg,
-        constructor: SpearPhishermanTower
-    },
-    {
         name:        'Phisherman',
         description: 'A tower that catches emails with a fishing rod to move them back in the lane.',
-        cost:        65,
+        cost:        120,
         iconPath:    PhishermanSvg,
         constructor: PhishermanTower
     },
     {
+        name:        'Spear Phisherman',
+        description: 'A tower that sends a spear to pierce through multiple enemies.',
+        cost:        100,
+        iconPath:    SpearPhishermanSvg,
+        constructor: SpearPhishermanTower
+    },
+    {
         name:        'Apple Cannon',
         description: 'Shoots explosive apples that can damage multiple enemies at once',
-        cost:        90,
+        cost:        135,
         iconPath:    AppleCannonSvg,
         constructor: AppleCannonTower
     },
     {
         name:        'Copilot',
         description: 'A magical tower that sends lightning bolts which chain across multiple nearby enemies.',
-        cost:        100,
+        cost:        220,
         iconPath:    CopilotSvg,
         constructor: CopilotTower
     }

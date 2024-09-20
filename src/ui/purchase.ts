@@ -107,6 +107,9 @@ export const registerTowersView = () => {
 			maybeTower.destroy();
 			GAME_MAP_GRID.removeTower(selectedTile);
 			PlayerCurrencyContext.value += maybeTower.sellValue;
+			if (SelectedUpgradeTowerContext.value === maybeTower) {
+				SelectedUpgradeTowerContext.value = null;
+			}
 		}
 	});
 };

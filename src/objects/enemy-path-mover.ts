@@ -9,6 +9,7 @@ import { lerpPosition } from '../util/lerp.ts';
 import { Point } from '../util/point.ts';
 import { FloatingIcon } from './floating-icon.ts';
 import { LivingRenderObject } from './object.ts';
+import { CurrentWaveContext } from '../context/wave.ts';
 
 const HEALTH_BAR_Y_OFFSET_PX = 10;
 const HEALTH_BAR_WIDTH_PX = TILE_ICON_SIZE_PX * 0.9;
@@ -20,6 +21,8 @@ const DRAG_SPEED = 1;
 const BACKWARDS_DRAG_TILE_COUNT = 3;
 
 const HIT_PADDING_PX = TILE_ICON_SIZE_PX * 0.05;
+
+const STAT_INCREASE_PER_WAVE = 0.05;
 
 export interface IEnemyPathMoverConstructor {
     moveSpeed: number;
@@ -50,6 +53,11 @@ export class EnemyPathMover extends LivingRenderObject {
             position: ENEMY_START_TILE.subtract({ x: 1 }).scale(TILE_SIZE_PX)
         });
 
+        const statMultiplier = 1 + (STAT_INCREASE_PER_WAVE * CurrentWaveContext.value);
+        // move speed can be fractional
+        moveSpeed = moveSpeed * statMultiplier;
+        health = Math.round(health * statMultiplier);
+
         this.#moveSpeed = moveSpeed;
         this.#lives = lives;
         this.#initialHealth = health;
@@ -61,9 +69,7 @@ export class EnemyPathMover extends LivingRenderObject {
         this.#updateTargetPoint(this.#targetTileIndex);
 
         if (this.#targetTileIndex !== 0) {
-            console.log('starting at', this.#targetTileIndex, 'of', GAME_MAP_GRID.enemyPath.length);
             this._positionPx = this.#targetTile.scale(TILE_SIZE_PX);
-            console.log('position', this._positionPx);
         }
 
         this.#icon = new FloatingIcon({
@@ -193,7 +199,6 @@ export class EnemyPathMover extends LivingRenderObject {
     }
 
     protected _onKilled() {
-        console.log('enemy died');
         // in case two things damage us in the same frame?
         this.destroy();
         PlayerCurrencyContext.value += this.#currencyValue;

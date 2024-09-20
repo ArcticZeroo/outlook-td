@@ -1,7 +1,7 @@
-export const getTierCost = (tierIndex: number) => {
+export const getTierCost = (tierIndex: number, originalCost: number) => {
 	if (tierIndex === 0) {
 		return 0;
 	}
 
-	return Math.pow(2, tierIndex - 1) * 50;
+	return Math.round(Math.max(50, originalCost * (Math.pow(1.5, tierIndex - 1) - 0.25)));
 }

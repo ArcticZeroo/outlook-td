@@ -3,6 +3,7 @@ import { PlayerCurrencyContext } from '../context/currency.ts';
 import { EnemyContext } from '../context/enemies.ts';
 import { RENDER_CONTEXT } from '../context/render.ts';
 import { LivingRenderObject } from './object.ts';
+import { CurrentWaveContext } from '../context/wave.ts';
 
 export class Spawner extends LivingRenderObject {
     #currentWaveIndex = 0;
@@ -25,12 +26,15 @@ export class Spawner extends LivingRenderObject {
     }
 
     tick(): void {
-        if (this.#currentWaveIndex >= waves.length) {
-            return;
-        }
+        CurrentWaveContext.value = this.#currentWaveIndex;
 
         if (this.#timer > 0) {
             this.#timer = Math.max(0, this.#timer - RENDER_CONTEXT.deltaTimeMs);
+            return;
+        }
+
+        if (this.#currentWaveIndex >= waves.length) {
+            // todo: random enemy
             return;
         }
 

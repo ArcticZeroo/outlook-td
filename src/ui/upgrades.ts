@@ -77,7 +77,7 @@ export const registerUpgradesView = () => {
 		const nextTier = selectedTower.tiers[nextTierIndex];
 		renderTier(nextTierElement, nextTier, 'Next Tier');
 
-		const nextTierCost = getTierCost(nextTierIndex);
+		const nextTierCost = getTierCost(nextTierIndex, selectedTower.displayData.cost);
 		const costElement = document.createElement('span');
 		costElement.innerText = `Cost: 🪙 ${nextTierCost}`;
 		nextTierElement.appendChild(costElement);
