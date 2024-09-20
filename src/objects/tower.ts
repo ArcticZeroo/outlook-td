@@ -10,195 +10,216 @@ import { EnemyPathMover } from './enemy-path-mover.ts';
 import { Icon } from './icon.ts';
 import { renderInfectionEffect } from './infection.ts';
 import { LivingRenderObject } from './object.ts';
+import { ITowerDisplayData, ITowerTierBase } from '../models/tower.ts';
 
 const INFECTION_TIME_MS = 15_000;
 const INFECTION_IMMUNITY_MS = 15_000;
 const INFECTION_FIRE_RATE_DEBUFF = 2;
 const INFECTION_DAMAGE_DEBUFF = 0.5;
 
-export interface ITowerConstructor {
-    cost: number;
-    tile: Point;
-    damage: number;
-    range: number;
-    secondsPerBullet: number;
-    iconPath: string;
+export interface ITowerConstructor<TTier extends ITowerTierBase> {
+	displayData: ITowerDisplayData;
+	tile: Point;
+	tiers: TTier[];
 }
 
-export abstract class Tower extends LivingRenderObject {
-    readonly #cost: number;
-    readonly #tile: Point;
-    readonly #damage: number;
-    readonly #range: number;
-    readonly #msPerBullet: number;
-    readonly #icon: Icon;
-    readonly #iconPosition: Point;
-    #lastFireTime: number = 0;
-    #infectionTimer: number = 0;
-    #infectionImmunityTimer: number = 0;
+export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> extends LivingRenderObject {
+	readonly #displayData: ITowerDisplayData;
+	readonly #tile: Point;
+	readonly #icon: Icon;
+	readonly #iconPosition: Point;
+	readonly #tiers: TTier[];
+	#lastFireTime: number = 0;
+	#infectionTimer: number = 0;
+	#infectionImmunityTimer: number = 0;
+	#currentTierIndex: number = 0;
 
-    protected constructor({ cost, tile, damage, range, secondsPerBullet, iconPath }: ITowerConstructor) {
-        super({
-            position: tile.scale(TILE_SIZE_PX)
-        });
-        this.#cost = cost;
-        this.#tile = tile;
-        this.#damage = damage;
-        this.#range = range + 0.5; // Add 0.5 to account for center of the tile
-        this.#msPerBullet = secondsPerBullet * 1000;
-        this.#icon = new Icon({
-            path:   iconPath,
-            height: TILE_ICON_SIZE_PX,
-            width:  TILE_ICON_SIZE_PX
-        });
-        this.#iconPosition = this.#tile.scale(TILE_SIZE_PX).add({ x: TILE_ICON_OFFSET_PX, y: TILE_ICON_OFFSET_PX });
-    }
+	protected constructor({ tile, displayData, tiers }: ITowerConstructor<TTier>) {
+		super({
+			position: tile.scale(TILE_SIZE_PX)
+		});
 
-    get sellValue() {
-        return Math.floor(this.#cost / 2);
-    }
+		this.#tiers = tiers;
+		this.#displayData = displayData;
+		this.#tile = tile;
+		this.#icon = new Icon({
+			path:   displayData.iconPath,
+			height: TILE_ICON_SIZE_PX,
+			width:  TILE_ICON_SIZE_PX
+		});
+		this.#iconPosition = this.#tile.scale(TILE_SIZE_PX).add({ x: TILE_ICON_OFFSET_PX, y: TILE_ICON_OFFSET_PX });
+	}
 
-    get range() {
-        return this.#range;
-    }
+	get displayData(): Readonly<ITowerDisplayData> {
+		return this.#displayData;
+	}
 
-    get damage() {
-        return this.#damage;
-    }
+	get sellValue() {
+		return Math.floor(this.#displayData.cost / 2);
+	}
 
-    get fireRate() {
-        return this.#msPerBullet;
-    }
+	get stats(): TTier {
+		return this.#tiers[this.#currentTierIndex];
+	}
 
-    get effectiveTimeBetweenBulletsMs() {
-        if (this.#infectionTimer > 0) {
-            return this.#msPerBullet * INFECTION_FIRE_RATE_DEBUFF;
-        }
+	get range() {
+		// account for being in the center of tile
+		return this.stats.range + 0.5;
+	}
 
-        return this.#msPerBullet;
-    }
+	get damage() {
+		return this.stats.damage;
+	}
 
-    get #canFire() {
-        return (RENDER_CONTEXT.timeNow - this.#lastFireTime) > this.effectiveTimeBetweenBulletsMs;
-    }
+	get timeBetweenBulletsMs() {
+		return this.stats.secondsBetweenBullets * 1000;
+	}
 
-    get canBeInfected() {
-        return this.#infectionTimer <= Number.EPSILON && this.#infectionImmunityTimer <= Number.EPSILON;
-    }
+	get effectiveTimeBetweenBulletsMs() {
+		if (this.#infectionTimer > 0) {
+			return this.timeBetweenBulletsMs * INFECTION_FIRE_RATE_DEBUFF;
+		}
 
-    #tickInfection() {
-        if (this.#infectionTimer > 0) {
-            this.#infectionTimer -= RENDER_CONTEXT.deltaTimeMs;
-        } else if (this.#infectionImmunityTimer > 0) {
-            this.#infectionImmunityTimer -= RENDER_CONTEXT.deltaTimeMs;
-        }
-    }
+		return this.timeBetweenBulletsMs;
+	}
 
-    #fire(enemy: EnemyPathMover) {
-        this.#lastFireTime = RENDER_CONTEXT.timeNow;
-        this.spawnBullet(enemy, this.effectiveDamage);
-    }
+	get #canFire() {
+		return (RENDER_CONTEXT.timeNow - this.#lastFireTime) > this.effectiveTimeBetweenBulletsMs;
+	}
 
-    getTileBounds(): Box {
-        const rect = CANVAS_CONTEXT.canvas.getBoundingClientRect();
-        return new Box({
-            x: this._positionPx.x + rect.x,
-            y: this._positionPx.y + rect.y,
-            width: TILE_SIZE_PX,
-            height: TILE_SIZE_PX
-        });
-    }
+	get canBeInfected() {
+		return this.#infectionTimer <= Number.EPSILON && this.#infectionImmunityTimer <= Number.EPSILON;
+	}
 
-    destroy() {
-        super.destroy();
-    }
+	#tickInfection() {
+		if (this.#infectionTimer > 0) {
+			this.#infectionTimer -= RENDER_CONTEXT.deltaTimeMs;
+		} else if (this.#infectionImmunityTimer > 0) {
+			this.#infectionImmunityTimer -= RENDER_CONTEXT.deltaTimeMs;
+		}
+	}
 
-    infect() {
-        if (this.#infectionImmunityTimer > 0) {
-            return;
-        }
+	#fire(enemy: EnemyPathMover) {
+		this.#lastFireTime = RENDER_CONTEXT.timeNow;
+		this.spawnBullet(enemy, this.effectiveDamage);
+	}
 
-        this.#infectionTimer = INFECTION_TIME_MS;
-        this.#infectionImmunityTimer = INFECTION_IMMUNITY_MS;
-    }
+	getTileBoundsPx(): Box {
+		const rect = CANVAS_CONTEXT.canvas.getBoundingClientRect();
+		return new Box({
+			x:      this._positionPx.x + rect.x,
+			y:      this._positionPx.y + rect.y,
+			width:  TILE_SIZE_PX,
+			height: TILE_SIZE_PX
+		});
+	}
 
-    abstract spawnBullet(target: EnemyPathMover, damage: number): void;
+	destroy() {
+		super.destroy();
+	}
 
-    protected canAttackEnemy(_enemy: EnemyPathMover) {
-        return true;
-    }
+	infect() {
+		if (this.#infectionImmunityTimer > 0) {
+			return;
+		}
 
-    protected isReadyToFire() {
-        return true;
-    }
+		this.#infectionTimer = INFECTION_TIME_MS;
+		this.#infectionImmunityTimer = INFECTION_IMMUNITY_MS;
+	}
 
-    protected renderIcon(icon: Icon, iconPosition: Point) {
-        icon.render(iconPosition);
-    }
+	upgrade() {
+		this.#currentTierIndex = Math.min(this.#tiers.length, this.#currentTierIndex + 1);
+	}
 
-    get effectiveDamage() {
-        if (this.#infectionTimer > 0) {
-            return Math.floor(this.#damage * INFECTION_DAMAGE_DEBUFF);
-        }
+	get tiers(): ReadonlyArray<TTier> {
+		return this.#tiers;
+	}
 
-        return this.#damage;
-    }
+	get tierIndex() {
+		return this.#currentTierIndex;
+	}
 
-    tick() {
-        this.#tickInfection();
+	get canUpgrade() {
+		return this.#currentTierIndex < (this.#tiers.length - 1);
+	}
 
-        const center = this.tileCenterPx;
-        const isMouseOnTile = this.getTileBounds().isPointInside(MousePositionContext.value);
-        if (isMouseOnTile) {
-            // Draw range indicator
-            CANVAS_CONTEXT.fillStyle = 'rgba(255, 0, 0, 0.2)';
-            CANVAS_CONTEXT.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-            CANVAS_CONTEXT.beginPath();
-            CANVAS_CONTEXT.arc(center.x, center.y, this.#range * TILE_SIZE_PX, 0, 2 * Math.PI);
-            CANVAS_CONTEXT.closePath();
-            CANVAS_CONTEXT.fill();
-            CANVAS_CONTEXT.stroke();
-        }
+	abstract spawnBullet(target: EnemyPathMover, damage: number): void;
 
-        this.renderIcon(this.#icon, this.#iconPosition);
+	protected canAttackEnemy(_enemy: EnemyPathMover) {
+		return true;
+	}
 
-        if (this.#infectionTimer > 0) {
-            this.#infectionTimer -= RENDER_CONTEXT.deltaTimeMs;
-            renderInfectionEffect(this.tileCenterPx, this.createTime);
-        }
+	protected isReadyToFire() {
+		return true;
+	}
 
-        if (this.#canFire && this.isReadyToFire()) {
-            let furthestTravelEnemy: EnemyPathMover | null = null;
-            let furthestTravelDistance = 0;
-            for (const enemy of EnemyContext.values) {
-                if (!this.canAttackEnemy(enemy)) {
-                    continue;
-                }
+	protected renderIcon(icon: Icon, iconPosition: Point) {
+		icon.render(iconPosition);
+	}
 
-                const enemyTile = enemy.tile;
-                // intentional that this isn't manhattan distance
-                const distanceInTiles = Math.floor(this.#tile.distanceTo(enemyTile));
-                if (distanceInTiles <= this.#range) {
-                    const distance = enemy.distanceTraveled;
-                    if (distance > furthestTravelDistance) {
-                        furthestTravelDistance = distance;
-                        furthestTravelEnemy = enemy;
-                    }
-                }
-            }
+	get effectiveDamage() {
+		if (this.#infectionTimer > 0) {
+			return Math.floor(this.damage * INFECTION_DAMAGE_DEBUFF);
+		}
 
-            if (furthestTravelEnemy != null) {
-                this.#fire(furthestTravelEnemy);
-            }
-        }
-    }
+		return this.damage;
+	}
 
-    static *generateTowersInRange(center: Point, range: number): Generator<Tower> {
-        for (const point of generateTilesInRange(center, range)) {
-            const tile = GAME_MAP_GRID.getTile(point);
-            if (tile instanceof Tower) {
-                yield tile;
-            }
-        }
-    }
+	tick() {
+		this.#tickInfection();
+
+		const center = this.tileCenterPx;
+		const isMouseOnTile = this.getTileBoundsPx().isPointInside(MousePositionContext.value);
+		if (isMouseOnTile) {
+			// Draw range indicator
+			CANVAS_CONTEXT.fillStyle = 'rgba(255, 0, 0, 0.2)';
+			CANVAS_CONTEXT.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+			CANVAS_CONTEXT.beginPath();
+			CANVAS_CONTEXT.arc(center.x, center.y, this.range * TILE_SIZE_PX, 0, 2 * Math.PI);
+			CANVAS_CONTEXT.closePath();
+			CANVAS_CONTEXT.fill();
+			CANVAS_CONTEXT.stroke();
+		}
+
+		this.renderIcon(this.#icon, this.#iconPosition);
+
+		if (this.#infectionTimer > 0) {
+			this.#infectionTimer -= RENDER_CONTEXT.deltaTimeMs;
+			renderInfectionEffect(this.tileCenterPx, this.createTime);
+		}
+
+		if (this.#canFire && this.isReadyToFire()) {
+			let furthestTravelEnemy: EnemyPathMover | null = null;
+			let furthestTravelDistance = 0;
+			for (const enemy of EnemyContext.values) {
+				if (!this.canAttackEnemy(enemy)) {
+					continue;
+				}
+
+				const enemyTile = enemy.tile;
+				// intentional that this isn't manhattan distance
+				const distanceInTiles = Math.floor(this.#tile.distanceTo(enemyTile));
+				if (distanceInTiles <= this.range) {
+					const distance = enemy.distanceTraveled;
+					if (distance > furthestTravelDistance) {
+						furthestTravelDistance = distance;
+						furthestTravelEnemy = enemy;
+					}
+				}
+			}
+
+			if (furthestTravelEnemy != null) {
+				this.#fire(furthestTravelEnemy);
+			}
+		}
+	}
+
+	static* generateTowersInRange(center: Point, range: number): Generator<Tower> {
+		for (const point of generateTilesInRange(center, range)) {
+			const tile = GAME_MAP_GRID.getTile(point);
+			if (tile instanceof Tower) {
+				yield tile;
+			}
+		}
+	}
 }

@@ -4,6 +4,8 @@
     --color-sidebar-area: #8f8f8f;
     --color-sidebar-area-outline: #c4c4c4;
     --padding: 0.5rem;
+    --color-button: #2196F3;
+    --color-button-outline: #2a5f86;
 }
 
 * {
@@ -17,6 +19,20 @@ html, body {
     width: 100%;
 }
 
+button {
+    padding: var(--padding);
+    margin: 0;
+    outline: none;
+    border: 0.125rem solid var(--color-button-outline);
+    background: var(--color-button);
+    border-radius: var(--padding);
+    cursor: pointer;
+}
+
+button:disabled {
+    filter: opacity(0.75) grayscale(0.5);
+}
+
 #app {
     display: flex;
     flex-direction: column;
@@ -25,14 +41,26 @@ html, body {
     background: var(--color-background);
 }
 
+.hidden {
+    display: none;
+}
+
 .subtitle {
     opacity: 0.5;
     font-style: italic;
 }
 
+.relative {
+    position: relative;
+}
+
 .flex {
     display: flex;
     gap: var(--padding);
+}
+
+.flex-col {
+    flex-direction: column;
 }
 
 .align-center {
@@ -53,6 +81,7 @@ html, body {
     gap: var(--padding);
     border-radius: var(--padding);
     padding: var(--padding);
+    border: 0.125rem solid #5b5b5b;
 }
 
 #game-canvas {
@@ -63,6 +92,10 @@ html, body {
     background: var(--color-sidebar);
     display: flex;
     flex-direction: column;
+}
+
+#upgrades {
+    width: 16rem;
 }
 
 .sidebar-area {
@@ -104,4 +137,28 @@ html, body {
 
 .tower.selected {
     background: #f5da86;
+}
+
+#game-over {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: var(--padding);
+    border-radius: var(--padding);
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+#game-over #restart {
+    background: var(--color-background);
+    border: 0.125rem solid #426c79;
+}
+
+footer {
+    text-align: center;
+    color: #e0e0e0;
+    opacity: 0.5;
+    font-style: italic;
 }

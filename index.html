@@ -8,14 +8,28 @@
     <link rel="stylesheet" type="text/css" href="/src/style.css" />
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="flex flex-col">
       <header class="flex-center">
-        <img src="/logo.svg" alt="Outlook TD" class="rounded-container" />
+        <img src="/logo.svg" alt="Outlook TD" />
       </header>
-      <div id="game" class="flex justify-center">
-        <div id="upgrades" class="sidebar">
-          <div id="selected-tower" class="rounded-container"></div>
-          <div id="available-upgrades"></div>
+      <div id="game" class="flex justify-center relative">
+        <div id="game-over" class="flex-center">
+          <div class="rounded-container flex flex-col" id="restart">
+              <span>
+                Game Over
+              </span>
+            <span>
+                You ran out of time in your day!
+              </span>
+            <button id="restart-button">
+              Restart
+            </button>
+          </div>
+        </div>
+        <div id="upgrades" class="sidebar rounded-container">
+          <div id="selected-tower" class="sidebar-area rounded-container flex-center"></div>
+          <div id="current-tier" class="sidebar-area rounded-container"></div>
+          <div id="next-tier" class="sidebar-area rounded-container"></div>
         </div>
         <canvas id="game-canvas" width="800" height="800"></canvas>
         <div class="sidebar rounded-container">
@@ -37,6 +51,14 @@
           <div id="towers" class="sidebar-area rounded-container"></div>
         </div>
       </div>
+      <footer class="flex flex-col">
+        <span>
+          Developed by <a href="mailto:spnovick@microsoft.com">Spencer Novick</a>
+        </span>
+          <span>
+          This project is unofficial and unaffiliated with Microsoft
+        </span>
+      </footer>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

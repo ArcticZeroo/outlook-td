@@ -186,3 +186,14 @@ export class ValueListenerMap<TKey, TValue> {
 		this.#entryUpdatedListeners.addListener(listener);
 	}
 }
+
+export const multiDrive = (callback: () => void, notifiers: Array<ValueListener<any>>) => {
+	callback();
+
+	for (const listener of notifiers) {
+		listener.addListener(() => {
+			console.log(listener, 'notified');
+			callback();
+		});
+	}
+}

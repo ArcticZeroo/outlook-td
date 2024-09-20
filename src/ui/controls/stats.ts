@@ -1,5 +1,5 @@
 import { PlayerCurrencyContext } from '../../context/currency.ts';
-import { LivesNotifier } from '../../context/lives.ts';
+import { PlayerLivesContext } from '../../context/lives.ts';
 import { Views } from '../views.ts';
 
 const formatCurrency = (currency: number) => {
@@ -15,7 +15,9 @@ const registerCurrencyView = () => {
 
 const registerLivesView = () => {
     const livesDisplay = Views.lives;
-    LivesNotifier.drive(lives => {
+    PlayerLivesContext.drive(lives => {
+        lives = Math.max(0, lives);
+
         const hours = Math.floor(lives / 60);
         const minutes = lives % 60;
 

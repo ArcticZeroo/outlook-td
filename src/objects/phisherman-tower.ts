@@ -1,40 +1,55 @@
-import { IPurchasableTowerConstructor } from '../models/tower.ts';
+import { IPurchasableTowerConstructor, ITowerTierBase } from '../models/tower.ts';
 import { EnemyPathMover } from './enemy-path-mover.ts';
 import { FishingHook } from './fishing-hook.ts';
 import { Tower } from './tower.ts';
 
+const TIER_VALUES: ITowerTierBase[] = [
+	{
+		damage:   0,
+		range:    1,
+		secondsBetweenBullets: 5
+	},
+	{
+		damage:   0,
+		range:    2,
+		secondsBetweenBullets: 4
+	},
+	{
+		damage:   1,
+		range:    2,
+		secondsBetweenBullets: 3.5
+	},
+]
+
 export class PhishermanTower extends Tower {
-    #isCurrentlyDragging = false;
+	#isCurrentlyDragging = false;
 
-    constructor({ tile, cost, iconPath }: IPurchasableTowerConstructor) {
-        super({
-            cost,
-            tile,
-            iconPath,
-            damage:           0,
-            range:            2,
-            secondsPerBullet: 4
-        });
-    }
+	constructor({ tile, displayData }: IPurchasableTowerConstructor) {
+		super({
+			tile,
+			displayData,
+			tiers: TIER_VALUES
+		});
+	}
 
-    canAttackEnemy(enemy: EnemyPathMover): boolean {
-        return !enemy.isBeingDraggedToStart;
-    }
+	canAttackEnemy(enemy: EnemyPathMover): boolean {
+		return !enemy.isBeingDraggedToStart;
+	}
 
-    protected isReadyToFire(): boolean {
-        return !this.#isCurrentlyDragging;
-    }
+	protected isReadyToFire(): boolean {
+		return !this.#isCurrentlyDragging;
+	}
 
-    spawnBullet(target: EnemyPathMover, damage: number): void {
-        this.#isCurrentlyDragging = true;
-        new FishingHook({
-            target,
-            damage,
-            position: this.tileCenterPx,
-            speed: 12,
-            onComplete: () => {
-                this.#isCurrentlyDragging = false;
-            }
-        });
-    }
+	spawnBullet(target: EnemyPathMover, damage: number): void {
+		this.#isCurrentlyDragging = true;
+		new FishingHook({
+			target,
+			damage,
+			position:   this.tileCenterPx,
+			speed:      12,
+			onComplete: () => {
+				this.#isCurrentlyDragging = false;
+			}
+		});
+	}
 }

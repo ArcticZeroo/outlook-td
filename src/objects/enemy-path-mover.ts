@@ -2,7 +2,7 @@ import { ENEMY_START_TILE, TILE_ICON_OFFSET_PX, TILE_ICON_SIZE_PX, TILE_SIZE_PX 
 import { CANVAS_CONTEXT } from '../context/canvas.ts';
 import { PlayerCurrencyContext } from '../context/currency.ts';
 import { EnemyContext } from '../context/enemies.ts';
-import { LivesNotifier } from '../context/lives.ts';
+import { PlayerLivesContext } from '../context/lives.ts';
 import { RENDER_CONTEXT } from '../context/render.ts';
 import { GAME_MAP_GRID } from '../util/grid.ts';
 import { lerpPosition } from '../util/lerp.ts';
@@ -38,6 +38,7 @@ export class EnemyPathMover extends LivingRenderObject {
     readonly #initialHealth: number;
     readonly #currencyValue: number;
     readonly #iconPath: string;
+    #isMovingLeft = false;
     #health: number;
     #targetTileIndex: number = 0;
     #distanceTraveledInTiles: number = 0;
@@ -134,7 +135,7 @@ export class EnemyPathMover extends LivingRenderObject {
     #updateTargetPoint(index: number) {
         if (index >= GAME_MAP_GRID.enemyPath.length) {
             this.destroy();
-            LivesNotifier.value -= this.#lives;
+            PlayerLivesContext.value -= this.#lives;
             return;
         }
 
@@ -142,6 +143,8 @@ export class EnemyPathMover extends LivingRenderObject {
         this.#targetTileIndex = index;
         // In case we've moved out of the normal order (e.g. drag or spam mail)
         this.#distanceTraveledInTiles = index;
+
+        this.#isMovingLeft = this.#targetTile.x < this.tile.x;
     }
 
     #updateDragPosition(distanceInTiles: number) {
@@ -224,13 +227,12 @@ export class EnemyPathMover extends LivingRenderObject {
     tick() {
         this.#updatePosition();
 
-        const flipHorizontally = this.#targetTile.x < this.tile.x;
         const iconPosition = this._positionPx.add({ x: TILE_ICON_OFFSET_PX });
 
         if (this.isBeingDraggedToStart) {
-            this.#icon.renderWithoutFloating(iconPosition, flipHorizontally);
+            this.#icon.renderWithoutFloating(iconPosition, this.#isMovingLeft);
         } else {
-            this.#icon.render(iconPosition, this.createTime + this.#floatOffset, flipHorizontally);
+            this.#icon.render(iconPosition, this.createTime + this.#floatOffset, this.#isMovingLeft);
         }
 
         this.#renderHealthBar();

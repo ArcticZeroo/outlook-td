@@ -1,4 +1,6 @@
 import MailIcon from '../assets/mail.svg';
+import MalwareIcon from '../assets/malware.svg';
+import SpamMailIcon from '../assets/spam-mail.svg';
 import PlaneIcon from '../assets/plane.svg';
 import { EnemyPathMover } from '../objects/enemy-path-mover.ts';
 import { MalwareEnemy } from '../objects/malware-enemy.ts';
@@ -39,7 +41,7 @@ export const tankEnemy = () => new EnemyPathMover({
 export const spamMailEnemy = (splitCount: number) => () => new SpamEmailEnemy({
     moveSpeed:           0.5,
     currencyValue:       5,
-    iconPath:            MailIcon,
+    iconPath:            SpamMailIcon,
     remainingSplitCount: splitCount
 });
 
@@ -48,7 +50,7 @@ export const malwareEnemy = () => new MalwareEnemy({
     lives:         10, // 10 minutes to respond to an email
     health:        5,
     currencyValue: 5,
-    iconPath:      MailIcon,
+    iconPath:      MalwareIcon,
 });
 
 export const allEnemies = [mailEnemy, planeEnemy, tankEnemy];

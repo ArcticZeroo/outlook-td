@@ -20,9 +20,9 @@ const ENEMY_PATH_OFFSETS: ReadonlyArray<[Axis, number]> = [
 type MapTileValue = MapTileType | Tower;
 
 class Grid {
-    readonly #tiles: Map<number /*y*/, Map<number /*x*/, MapTileValue>> = new Map();
-    readonly #pathDistancesByTile: Map<number /*y*/, Map<number /*x*/, number>> = new Map();
-    readonly #pathPoints: Point[] = [];
+    #tiles: Map<number /*y*/, Map<number /*x*/, MapTileValue>> = new Map();
+    #pathDistancesByTile: Map<number /*y*/, Map<number /*x*/, number>> = new Map();
+    #pathPoints: Point[] = [];
 
     constructor() {
         this.#initializeGrid();
@@ -85,6 +85,13 @@ class Grid {
 
     removeTower(point: Readonly<Point>) {
         this.#setTile(point, MapTileType.placeable);
+    }
+
+    reset(): void {
+        this.#tiles = new Map();
+        this.#pathDistancesByTile = new Map();
+        this.#pathPoints = [];
+        this.#initializeGrid();
     }
 }
 

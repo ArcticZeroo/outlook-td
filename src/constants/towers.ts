@@ -3,14 +3,14 @@ import PhishermanSvg from '../assets/phisherman.svg';
 import SpearPhishermanSvg from '../assets/spear penguin.svg';
 import CopilotSvg from '../assets/copilot.svg';
 import AppleCannonSvg from '../assets/apple cannon.svg';
-import { ITowerData } from '../models/tower.ts';
+import { ITowerDisplayData } from '../models/tower.ts';
 import { AppleCannonTower } from '../objects/apple-cannon-tower.ts';
 import { CopilotTower } from '../objects/copilot-tower.ts';
 import { PhishermanTower } from '../objects/phisherman-tower.ts';
 import { SpearPhishermanTower } from '../objects/spear-phisherman-tower.ts';
 import { TypewriterTower } from '../objects/typewriter-tower.ts';
 
-export const towers: ITowerData[] = [
+export const towers: ITowerDisplayData[] = [
     {
         name:        'Typewriter',
         description: 'A basic tower that sends many short but fast-paced email replies.',

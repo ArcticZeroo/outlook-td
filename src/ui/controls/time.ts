@@ -1,5 +1,7 @@
 import { TimeControlContext } from '../../context/time-control.ts';
 import { Views } from '../views.ts';
+import { GameStateContext } from '../../context/game-state.ts';
+import { GameState } from '../../models/game.ts';
 
 const createTimeButton = (id: string, value: number) => {
     const parent = Views.timeSpeedButtons;
@@ -29,8 +31,11 @@ export const registerTimeButtons = () => {
     }
 
     document.addEventListener('keydown', (event) => {
+        if (GameStateContext.value !== GameState.playing) {
+            return;
+        }
+
         if (event.key === ' ') {
-            console.log(TimeControlContext.value);
             TimeControlContext.value = TimeControlContext.value === 0 ? 1 : 0;
             return;
         }

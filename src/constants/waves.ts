@@ -1,5 +1,5 @@
 import { EnemyPathMover } from '../objects/enemy-path-mover.ts';
-import { mailEnemy, malwareEnemy, planeEnemy, spamMailEnemy } from './enemies.ts';
+import { mailEnemy, planeEnemy } from './enemies.ts';
 
 interface IEnemySpawnData {
     enemy: () => EnemyPathMover;
@@ -24,7 +24,7 @@ export const waves: WaveInstructions = [
     // Wave 1
     [
         {
-            enemy:                spamMailEnemy(4),
+            enemy:                planeEnemy,
             timeAfterLastSpawnMs: 2000
         },
     ],

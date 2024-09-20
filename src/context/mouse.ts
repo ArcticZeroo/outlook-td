@@ -10,4 +10,4 @@ document.addEventListener('mousemove', (event) => {
     });
 });
 
-export const MouseTileContext = new ValueListener<Point | null>(null);
+export const MouseTileHoverContext = new ValueListener<Point | null>(null);

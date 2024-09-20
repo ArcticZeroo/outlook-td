@@ -1,6 +1,6 @@
 import { CANVAS_CONTEXT } from '../context/canvas.ts';
 import { RENDER_CONTEXT } from '../context/render.ts';
-import { IPurchasableTowerConstructor } from '../models/tower.ts';
+import { IPurchasableTowerConstructor, ITowerTierBase } from '../models/tower.ts';
 import { writeOutlineText } from '../util/canvas.ts';
 import { choice } from '../util/random.ts';
 import { EnemyPathMover } from './enemy-path-mover.ts';
@@ -12,32 +12,55 @@ const phrases = [
     'As per my last email',
     'Just following up',
     'Let\'s circle back',
-    '(Automatic reply) I\'m in belize until 2026',
-    'Gentle ping'
+    '(Automatic Reply) OOF in belize until 2026',
+    'Gentle ping',
+    'Not sure if you saw my last email',
+    'Let\'s take this offline',
+    'Any updates on this?',
+    'Just a friendly reminder',
+    'In case you missed it'
 ];
 
 const PHRASE_CHANGE_TIME_MS = 1000;
 const PHRASE_DEATH_TIME_MS = 500;
+
+const TIER_VALUES: ITowerTierBase[] = [
+    {
+        damage: 1,
+        range: 1,
+        secondsBetweenBullets: 1.4
+    },
+    {
+        damage: 1,
+        range: 2,
+        secondsBetweenBullets: 1.2
+    },
+    {
+        damage: 2,
+        range: 2,
+        secondsBetweenBullets: 1
+    }
+];
 
 export class TypewriterTower extends Tower {
     #currentPhrase: string = '';
     #phraseTimeLeft: number = 0;
     #phraseDeathTimeLeft: number = 0;
 
-    constructor({ tile, cost, iconPath }: IPurchasableTowerConstructor) {
+    constructor({ tile, displayData }: IPurchasableTowerConstructor) {
         super({
             tile,
-            cost,
-            iconPath,
-            damage:           1,
-            range:            2,
-            secondsPerBullet: 1.4,
+            displayData,
+            tiers: TIER_VALUES
         });
     }
 
     spawnBullet(target: EnemyPathMover, damage: number): void {
         if (!this.#currentPhrase || this.#phraseTimeLeft <= Number.EPSILON) {
             this.#currentPhrase = choice(phrases);
+            if (!this.#currentPhrase.endsWith('?')) {
+                this.#currentPhrase += '...';
+            }
             this.#phraseTimeLeft = PHRASE_CHANGE_TIME_MS;
             this.#phraseDeathTimeLeft = PHRASE_DEATH_TIME_MS;
         }
