@@ -11,11 +11,16 @@ import { Icon } from './icon.ts';
 import { renderInfectionEffect } from './infection.ts';
 import { LivingRenderObject } from './object.ts';
 import { ITowerDisplayData, ITowerTierBase } from '../models/tower.ts';
+import { CurrentWaveContext } from '../context/wave.ts';
+import { SelectedUpgradeTowerContext } from '../context/tower.ts';
+import { drawCircle } from '../util/canvas.ts';
 
 const INFECTION_TIME_MS = 15_000;
 const INFECTION_IMMUNITY_MS = 15_000;
-const INFECTION_FIRE_RATE_DEBUFF = 2;
-const INFECTION_DAMAGE_DEBUFF = 0.5;
+const INFECTION_DEBUFF_RATIO = 2;
+const INFECTION_SCALE_PER_WAVE = 0.02;
+
+const getCurrentInfectionScale = () => 1 - (INFECTION_SCALE_PER_WAVE * CurrentWaveContext.value);
 
 export interface ITowerConstructor<TTier extends ITowerTierBase> {
 	displayData: ITowerDisplayData;
@@ -33,6 +38,7 @@ export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> exten
 	#infectionTimer: number = 0;
 	#infectionImmunityTimer: number = 0;
 	#currentTierIndex: number = 0;
+	#isPendingInfection: boolean = false;
 
 	protected constructor({ tile, displayData, tiers }: ITowerConstructor<TTier>) {
 		super({
@@ -77,7 +83,7 @@ export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> exten
 
 	get effectiveTimeBetweenBulletsMs() {
 		if (this.#infectionTimer > 0) {
-			return this.timeBetweenBulletsMs * INFECTION_FIRE_RATE_DEBUFF;
+			return this.timeBetweenBulletsMs * INFECTION_DEBUFF_RATIO * getCurrentInfectionScale();
 		}
 
 		return this.timeBetweenBulletsMs;
@@ -88,12 +94,15 @@ export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> exten
 	}
 
 	get canBeInfected() {
-		return this.#infectionTimer <= Number.EPSILON && this.#infectionImmunityTimer <= Number.EPSILON;
+		return this.#infectionTimer <= Number.EPSILON
+			&& this.#infectionImmunityTimer <= Number.EPSILON
+			&& !this.#isPendingInfection;
 	}
 
 	#tickInfection() {
 		if (this.#infectionTimer > 0) {
 			this.#infectionTimer -= RENDER_CONTEXT.deltaTimeMs;
+			this.#isPendingInfection = false;
 		} else if (this.#infectionImmunityTimer > 0) {
 			this.#infectionImmunityTimer -= RENDER_CONTEXT.deltaTimeMs;
 		}
@@ -118,12 +127,16 @@ export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> exten
 		super.destroy();
 	}
 
+	markForInfection() {
+		this.#isPendingInfection = true;
+	}
+
 	infect() {
-		if (this.#infectionImmunityTimer > 0) {
+		if (this.#infectionTimer > 0 || this.#infectionImmunityTimer > 0) {
 			return;
 		}
 
-		this.#infectionTimer = INFECTION_TIME_MS;
+		this.#infectionTimer = INFECTION_TIME_MS * getCurrentInfectionScale();
 		this.#infectionImmunityTimer = INFECTION_IMMUNITY_MS;
 	}
 
@@ -159,7 +172,7 @@ export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> exten
 
 	get effectiveDamage() {
 		if (this.#infectionTimer > 0) {
-			return Math.floor(this.damage * INFECTION_DAMAGE_DEBUFF);
+			return Math.floor(this.damage / (INFECTION_DEBUFF_RATIO * getCurrentInfectionScale()));
 		}
 
 		return this.damage;
@@ -169,16 +182,20 @@ export abstract class Tower<TTier extends ITowerTierBase = ITowerTierBase> exten
 		this.#tickInfection();
 
 		const center = this.tileCenterPx;
+
+		if (SelectedUpgradeTowerContext.value === this) {
+			CANVAS_CONTEXT.fillStyle = 'gold';
+			CANVAS_CONTEXT.strokeStyle = 'darkgoldenrod';
+			drawCircle(center, TILE_ICON_SIZE_PX * 0.5, true /*stroke*/);
+		}
+
+
 		const isMouseOnTile = this.getTileBoundsPx().isPointInside(MousePositionContext.value);
 		if (isMouseOnTile) {
 			// Draw range indicator
 			CANVAS_CONTEXT.fillStyle = 'rgba(255, 0, 0, 0.2)';
 			CANVAS_CONTEXT.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-			CANVAS_CONTEXT.beginPath();
-			CANVAS_CONTEXT.arc(center.x, center.y, this.range * TILE_SIZE_PX, 0, 2 * Math.PI);
-			CANVAS_CONTEXT.closePath();
-			CANVAS_CONTEXT.fill();
-			CANVAS_CONTEXT.stroke();
+			drawCircle(center, this.range * TILE_SIZE_PX, true /*stroke*/);
 		}
 
 		this.renderIcon(this.#icon, this.#iconPosition);

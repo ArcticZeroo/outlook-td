@@ -1,6 +1,6 @@
 import { EnemyPathMover, IEnemyPathMoverConstructor } from './enemy-path-mover.ts';
 
-const SPEED_INCREASE_PER_SPLIT = 1.2
+const SPEED_INCREASE_PER_SPLIT = 1.15
 
 interface ISpamEmailEnemyConstructor extends Omit<IEnemyPathMoverConstructor, 'lives' | 'health'> {
     originalSplitCount?: number;

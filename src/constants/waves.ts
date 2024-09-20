@@ -33,73 +33,75 @@ export const waves: WaveInstructions = [
 	[
 		{
 			enemy:               mailEnemy,
-			count:               6,
+			count:               15,
 			timeBetweenSpawnsMs: 8000
 		}
 	],
-	// Wave 2 - Enemies spawn closer together by a bit
+	// Wave 2 - Enemies spawn closer together, you probably need a second tower/upgrade now
 	[
 		{
 			enemy:               mailEnemy,
-			count:               8,
-			timeBetweenSpawnsMs: 7000
+			count:               15,
+			timeBetweenSpawnsMs: 6500
 		},
 	],
-	// Wave 3 - Introduce one teams meeting enemy
+	// Wave 3 - Introduce the plane enemy, give the player some more time to clear out the mail enemies first
 	[
 		{
 			enemy:                mailEnemy,
-			count:                3,
-			timeBetweenSpawnsMs:  5000,
-			timeAfterLastSpawnMs: 6000
-		},
-		{
-			enemy: teamsMeetingEnemy
-		},
-	],
-	// Wave 4 - Add a second teams meeting enemy
-	[
-		{
-			enemy:                mailEnemy,
-			count:                2,
-			timeBetweenSpawnsMs:  5000,
-			timeAfterLastSpawnMs: 6000
-		},
-		{
-			enemy:                teamsMeetingEnemy,
-			count:                2,
-			timeBetweenSpawnsMs:  5000,
-			timeAfterLastSpawnMs: 5000
-		},
-		{
-			enemy: mailEnemy
-		},
-	],
-	// Wave 5 - Introduce the plane enemy
-	[
-		{
-			enemy:                mailEnemy,
-			count:                5,
-			timeBetweenSpawnsMs:  4500,
-			timeAfterLastSpawnMs: 4500
+			count:                10,
+			timeBetweenSpawnsMs:  6000,
+			timeAfterLastSpawnMs: 10_000
 		},
 		{
 			enemy: planeEnemy
 		},
 	],
-	// Wave 6 - Filler round that's a little harder
+	// Wave 4 - Two plane enemies
 	[
 		{
 			enemy:                mailEnemy,
-			count:                3,
-			timeBetweenSpawnsMs:  4000,
-			timeAfterLastSpawnMs: 4500
+			count:                6,
+			timeBetweenSpawnsMs:  5_500,
+			timeAfterLastSpawnMs: 10_000
+		},
+		{
+			enemy:                planeEnemy,
+			count:                2,
+			timeBetweenSpawnsMs:  7_000,
+			timeAfterLastSpawnMs: 7_000
+		},
+		{
+			enemy:               mailEnemy,
+			count:               8,
+			timeBetweenSpawnsMs: 6_000
+		},
+	],
+	// Wave 5 - Introduce the teams meeting enemy
+	[
+		{
+			enemy:                mailEnemy,
+			count:                8,
+			timeBetweenSpawnsMs:  6_000,
+			timeAfterLastSpawnMs: 6_000
+		},
+		{
+			enemy: teamsMeetingEnemy
+		},
+	],
+	// Wave 6 - Two teams meeting enemies and a plane enemy
+	[
+		{
+			enemy:                mailEnemy,
+			count:                6,
+			timeBetweenSpawnsMs:  5_000,
+			timeAfterLastSpawnMs: 4_500
 		},
 		{
 			enemy:                teamsMeetingEnemy,
-			count:                3,
-			timeBetweenSpawnsMs:  6000,
-			timeAfterLastSpawnMs: 5000
+			count:                2,
+			timeBetweenSpawnsMs:  6_000,
+			timeAfterLastSpawnMs: 8_000
 		},
 		{
 			enemy: planeEnemy
@@ -108,101 +110,100 @@ export const waves: WaveInstructions = [
 	// Wave 7 - Introduce spam enemy
 	[
 		{
-			enemy:                mailEnemy,
-			timeAfterLastSpawnMs: 3000,
-		},
-		{
 			enemy:                spamMailEnemy(2),
-			timeAfterLastSpawnMs: 5000
+			timeAfterLastSpawnMs: 8_000
 		},
 		{
-			enemy:                mailEnemy,
-			count:                4,
-			timeAfterLastSpawnMs: 3000,
+			enemy:               mailEnemy,
+			count:               8,
+			timeBetweenSpawnsMs: 5_000
 		},
 	],
 	// Wave 8 - Second filler round
 	[
 		{
 			enemy:                planeEnemy,
-			count:                2,
-			timeBetweenSpawnsMs:  5000,
-			timeAfterLastSpawnMs: 2000,
+			timeAfterLastSpawnMs: 5_000,
 		},
 		{
 			enemy:                mailEnemy,
-			count:                4,
-			timeBetweenSpawnsMs:  3000,
-			timeAfterLastSpawnMs: 3000
+			count:                8,
+			timeBetweenSpawnsMs:  5_500,
+			timeAfterLastSpawnMs: 5_500
+		},
+		{
+			enemy:                planeEnemy,
+			timeAfterLastSpawnMs: 6_000,
 		},
 		{
 			enemy:               teamsMeetingEnemy,
 			count:               3,
-			timeBetweenSpawnsMs: 3500
+			timeBetweenSpawnsMs: 6_000
 		},
 	],
 	// Wave 9 - Introduce malware enemy
 	[
 		{
 			enemy:                malwareEnemy,
-			timeAfterLastSpawnMs: 1000,
+			count:                1,
+			timeBetweenSpawnsMs:  5_000,
+			timeAfterLastSpawnMs: 3_000,
 		},
 		{
 			enemy:                mailEnemy,
-			count:                2,
-			timeBetweenSpawnsMs:  3000,
-			timeAfterLastSpawnMs: 2000
+			count:                6,
+			timeBetweenSpawnsMs:  4_000,
+			timeAfterLastSpawnMs: 3_000
 		},
 		{
 			enemy:                malwareEnemy,
-			timeAfterLastSpawnMs: 1000
+			timeAfterLastSpawnMs: 3_000
 		},
 		{
 			enemy:               mailEnemy,
-			count:               4,
-			timeBetweenSpawnsMs: 3000
+			count:               6,
+			timeBetweenSpawnsMs: 4_000
 		},
 	],
 	// Wave 10 - filler again
 	[
 		{
 			enemy:                mailEnemy,
-			count:                2,
-			timeBetweenSpawnsMs:  2000,
-			timeAfterLastSpawnMs: 3000
+			count:                4,
+			timeBetweenSpawnsMs:  3_500,
+			timeAfterLastSpawnMs: 3_000
 		},
 		{
-			enemy:                spamMailEnemy(2),
+			enemy:                spamMailEnemy(3),
 			count:                2,
-			timeBetweenSpawnsMs:  6000,
-			timeAfterLastSpawnMs: 6000
+			timeBetweenSpawnsMs:  8_000,
+			timeAfterLastSpawnMs: 6_000
 		},
 		{
 			enemy:                planeEnemy,
-			timeAfterLastSpawnMs: 2000,
+			timeAfterLastSpawnMs: 3_000,
 		},
 		{
 			enemy:                teamsMeetingEnemy,
 			count:                2,
-			timeBetweenSpawnsMs:  4000,
-			timeAfterLastSpawnMs: 5000
+			timeBetweenSpawnsMs:  5_000,
+			timeAfterLastSpawnMs: 5_000
 		},
 	],
 	// Wave 11 - Introduce manager email enemy
 	[
 		{
 			enemy:                mailEnemy,
-			count:                3,
-			timeBetweenSpawnsMs:  2000,
-			timeAfterLastSpawnMs: 2000
+			count:                6,
+			timeBetweenSpawnsMs:  3_000,
+			timeAfterLastSpawnMs: 3_000
 		},
 		{
-			enemy:                spamMailEnemy(2),
-			timeAfterLastSpawnMs: 4000,
+			enemy:                spamMailEnemy(3),
+			timeAfterLastSpawnMs: 4_000,
 		},
 		{
-			enemy:                managerEnemy,
-			timeAfterLastSpawnMs: 10_000
+			enemy: managerEnemy
 		}
 	],
 	// Wave 12 - filler, give another manager with some teams meetings
@@ -210,12 +211,12 @@ export const waves: WaveInstructions = [
 		{
 			enemy:                teamsMeetingEnemy,
 			count:                3,
-			timeBetweenSpawnsMs:  2000,
-			timeAfterLastSpawnMs: 2000
+			timeBetweenSpawnsMs:  4_000,
+			timeAfterLastSpawnMs: 4_000
 		},
 		{
 			enemy:                spamMailEnemy(3),
-			timeAfterLastSpawnMs: 4000,
+			timeAfterLastSpawnMs: 4_000,
 		},
 		{
 			enemy:                managerEnemy,
@@ -223,14 +224,24 @@ export const waves: WaveInstructions = [
 		},
 		{
 			enemy:               mailEnemy,
-			count:               3,
-			timeBetweenSpawnsMs: 2000
+			count:               6,
+			timeBetweenSpawnsMs: 2_500
 		},
 	],
 	// Wave 13 - Introduce walmart enemy
 	[
 		{
-			enemy: walmartEnemy
-		}
+			enemy:                walmartEnemy,
+			timeAfterLastSpawnMs: 5_000
+		},
+		{
+			enemy:                malwareEnemy,
+			timeAfterLastSpawnMs: 5_000
+		},
+		{
+			enemy:               mailEnemy,
+			count:               6,
+			timeBetweenSpawnsMs: 2_500
+		},
 	]
 ];

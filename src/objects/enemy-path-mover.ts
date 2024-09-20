@@ -25,229 +25,283 @@ const HIT_PADDING_PX = TILE_ICON_SIZE_PX * 0.05;
 const STAT_INCREASE_PER_WAVE = 0.05;
 
 export interface IEnemyPathMoverConstructor {
-    moveSpeed: number;
-    lives: number;
-    health: number;
-    iconPath: string;
-    currencyValue: number;
-    initialTileIndex?: number;
+	moveSpeed: number;
+	lives: number;
+	health: number;
+	iconPath: string;
+	currencyValue: number;
+	initialTileIndex?: number;
+	timeBetweenMinionSpawnsMs?: number;
+	fastMinionSpawnChance?: number;
+	currentTileMinionSpawnChance?: number;
 }
 
 export class EnemyPathMover extends LivingRenderObject {
-    readonly #moveSpeed: number;
-    readonly #lives: number;
-    readonly #icon: FloatingIcon;
-    readonly #floatOffset: number;
-    readonly #initialHealth: number;
-    readonly #currencyValue: number;
-    readonly #iconPath: string;
-    #isMovingLeft = false;
-    #health: number;
-    #targetTileIndex: number = 0;
-    #distanceTraveledInTiles: number = 0;
-    #isBeingDraggedToStart: boolean = false;
-    #onBeingDraggedComplete: ((cancelled: boolean) => void) | null = null;
+	static #slowMinion: (initialPathIndex?: number) => EnemyPathMover;
+	static #fastMinion: (initialPathIndex?: number) => EnemyPathMover;
 
-    constructor({ moveSpeed, lives, health, currencyValue, iconPath, initialTileIndex = 0 }: IEnemyPathMoverConstructor) {
-        super({
-            position: ENEMY_START_TILE.subtract({ x: 1 }).scale(TILE_SIZE_PX)
-        });
+	readonly #moveSpeed: number;
+	readonly #lives: number;
+	readonly #icon: FloatingIcon;
+	readonly #floatOffset: number;
+	readonly #initialHealth: number;
+	readonly #currencyValue: number;
+	readonly #iconPath: string;
+	readonly #timeBetweenMinionSpawnsMs?: number;
+	readonly #fastMinionSpawnChance?: number;
+	readonly #currentTileMinionSpawnChance?: number;
+	#isMovingLeft = false;
+	#health: number;
+	#targetTileIndex: number = 0;
+	#distanceTraveledInTiles: number = 0;
+	#isBeingDraggedToStart: boolean = false;
+	#onBeingDraggedComplete: ((cancelled: boolean) => void) | null = null;
+	#minionSpawnTimer: number = 0;
 
-        const statMultiplier = 1 + (STAT_INCREASE_PER_WAVE * CurrentWaveContext.value);
-        // move speed can be fractional
-        moveSpeed = moveSpeed * statMultiplier;
-        health = Math.round(health * statMultiplier);
+	constructor({
+					moveSpeed,
+					lives,
+					health,
+					currencyValue,
+					iconPath,
+					fastMinionSpawnChance,
+					timeBetweenMinionSpawnsMs,
+					currentTileMinionSpawnChance,
+					initialTileIndex = 0
+				}: IEnemyPathMoverConstructor) {
+		super({
+			position: ENEMY_START_TILE.subtract({ x: 1 }).scale(TILE_SIZE_PX)
+		});
 
-        this.#moveSpeed = moveSpeed;
-        this.#lives = lives;
-        this.#initialHealth = health;
-        this.#health = health;
-        this.#currencyValue = currencyValue;
-        this.#iconPath = iconPath;
-        this.#targetTileIndex = initialTileIndex;
+		const statMultiplier = 1 + (STAT_INCREASE_PER_WAVE * CurrentWaveContext.value);
+		// move speed can be fractional
+		moveSpeed = moveSpeed * statMultiplier;
+		health = Math.round(health * statMultiplier);
 
-        this.#updateTargetPoint(this.#targetTileIndex);
+		this.#moveSpeed = moveSpeed;
+		this.#lives = lives;
+		this.#initialHealth = health;
+		this.#health = health;
+		this.#currencyValue = currencyValue;
+		this.#iconPath = iconPath;
+		this.#targetTileIndex = initialTileIndex;
+		this.#timeBetweenMinionSpawnsMs = timeBetweenMinionSpawnsMs;
+		this.#fastMinionSpawnChance = fastMinionSpawnChance;
+		this.#currentTileMinionSpawnChance = currentTileMinionSpawnChance;
 
-        if (this.#targetTileIndex !== 0) {
-            this._positionPx = this.#targetTile.scale(TILE_SIZE_PX);
-        }
+		if (this.#timeBetweenMinionSpawnsMs) {
+			this.#minionSpawnTimer = this.#timeBetweenMinionSpawnsMs;
+		}
 
-        this.#icon = new FloatingIcon({
-            path:                    iconPath,
-            width:                   TILE_ICON_SIZE_PX,
-            height:                  TILE_ICON_SIZE_PX,
-            floatingAmplitude:       TILE_ICON_SIZE_PX * 0.1,
-            floatingSecondsPerCycle: 3
-        });
-        this.#floatOffset = Math.random() * 5;
-        EnemyContext.add(this);
-    }
+		this.#updateTargetPoint(this.#targetTileIndex);
 
-    get #targetTile() {
-        return GAME_MAP_GRID.enemyPath[this.#targetTileIndex];
-    }
+		if (this.#targetTileIndex !== 0) {
+			this._positionPx = this.#targetTile.scale(TILE_SIZE_PX);
+		}
 
-    get distanceTraveled() {
-        return this.#distanceTraveledInTiles;
-    }
+		this.#icon = new FloatingIcon({
+			path:                    iconPath,
+			width:                   TILE_ICON_SIZE_PX,
+			height:                  TILE_ICON_SIZE_PX,
+			floatingAmplitude:       TILE_ICON_SIZE_PX * 0.1,
+			floatingSecondsPerCycle: 3
+		});
+		this.#floatOffset = Math.random() * 5;
+		EnemyContext.add(this);
+	}
 
-    get lives() {
-        return this.#lives;
-    }
+	get #targetTile() {
+		return GAME_MAP_GRID.enemyPath[this.#targetTileIndex];
+	}
 
-    get moveSpeed() {
-        return this.#moveSpeed;
-    }
+	get distanceTraveled() {
+		return this.#distanceTraveledInTiles;
+	}
 
-    get initialHealth() {
-        return this.#initialHealth;
-    }
+	get lives() {
+		return this.#lives;
+	}
 
-    get health() {
-        return this.#health;
-    }
+	get moveSpeed() {
+		return this.#moveSpeed;
+	}
 
-    get currencyValue() {
-        return this.#currencyValue;
-    }
+	get initialHealth() {
+		return this.#initialHealth;
+	}
 
-    get iconPath() {
-        return this.#iconPath;
-    }
+	get health() {
+		return this.#health;
+	}
 
-    destroy() {
-        super.destroy();
+	get currencyValue() {
+		return this.#currencyValue;
+	}
 
-        EnemyContext.delete(this);
-    }
+	get iconPath() {
+		return this.#iconPath;
+	}
 
-    protected _getHealthRatio() {
-        return this.#health / this.#initialHealth;
-    }
+	destroy() {
+		super.destroy();
 
-    protected _getCurrentPathIndex() {
-        return Math.max(0, this.#targetTileIndex - 1);
-    }
+		EnemyContext.delete(this);
+	}
 
-    get effectiveMoveSpeed() {
-        return this.#isBeingDraggedToStart ? DRAG_SPEED
-                                           : this.#moveSpeed;
-    }
+	protected _getHealthRatio() {
+		return this.#health / this.#initialHealth;
+	}
 
-    isHit(positionPx: Point, paddingPx: number = 0) {
-        return this.#icon.getBoundingBox(this.positionPx).pad(HIT_PADDING_PX + paddingPx).isPointInside(positionPx);
-    }
+	protected _getCurrentPathIndex() {
+		return Math.max(0, this.#targetTileIndex - 1);
+	}
 
-    #updateTargetPoint(index: number) {
-        if (index >= GAME_MAP_GRID.enemyPath.length) {
-            this.destroy();
-            PlayerLivesContext.value -= this.#lives;
-            return;
-        }
+	get effectiveMoveSpeed() {
+		return this.#isBeingDraggedToStart ? DRAG_SPEED
+			: this.#moveSpeed;
+	}
 
-        index = Math.max(0, index);
-        this.#targetTileIndex = index;
-        // In case we've moved out of the normal order (e.g. drag or spam mail)
-        this.#distanceTraveledInTiles = index;
+	isHit(positionPx: Point, paddingPx: number = 0) {
+		return this.#icon.getBoundingBox(this.positionPx).pad(HIT_PADDING_PX + paddingPx).isPointInside(positionPx);
+	}
 
-        this.#isMovingLeft = this.#targetTile.x < this.tile.x;
-    }
+	#updateTargetPoint(index: number) {
+		if (index >= GAME_MAP_GRID.enemyPath.length) {
+			this.destroy();
+			PlayerLivesContext.value -= this.#lives;
+			return;
+		}
 
-    #updateDragPosition(distanceInTiles: number) {
-        if (!this.#isBeingDraggedToStart) {
-            return;
-        }
+		index = Math.max(0, index);
+		this.#targetTileIndex = index;
+		// In case we've moved out of the normal order (e.g. drag or spam mail)
+		this.#distanceTraveledInTiles = index;
 
-        const targetPositionPx = this.#targetTile.scale(TILE_SIZE_PX);
-        this._positionPx = lerpPosition(this._positionPx, targetPositionPx, distanceInTiles * TILE_SIZE_PX);
-        const distanceToTargetPx = this._positionPx.distanceTo(targetPositionPx);
-        if (distanceToTargetPx < DRAG_DISTANCE_THRESHOLD_PX) {
-            this.#isBeingDraggedToStart = false;
-            this.#onBeingDraggedComplete?.(false /*cancelled*/);
-        }
-    }
+		this.#isMovingLeft = this.#targetTile.x < this.tile.x;
+	}
 
-    #moveTowardsTarget(distanceInTiles: number) {
-        this.#distanceTraveledInTiles += distanceInTiles;
-        const targetPositionPx = this.#targetTile.scale(TILE_SIZE_PX);
-        this._positionPx = lerpPosition(this._positionPx, targetPositionPx, distanceInTiles * TILE_SIZE_PX);
-        if (this._positionPx.equals(targetPositionPx)) {
-            this.#distanceTraveledInTiles += 1;
-            this.#updateTargetPoint(this.#targetTileIndex + 1);
-        }
-    }
+	#updateDragPosition(distanceInTiles: number) {
+		if (!this.#isBeingDraggedToStart) {
+			return;
+		}
 
-    #updatePosition() {
-        const distanceInTiles = this.effectiveMoveSpeed * (RENDER_CONTEXT.deltaTimeMs / 1000);
-        if (!this.isBeingDraggedToStart) {
-            this.#moveTowardsTarget(distanceInTiles);
-        } else {
-            this.#updateDragPosition(distanceInTiles);
-        }
-    }
+		const targetPositionPx = this.#targetTile.scale(TILE_SIZE_PX);
+		this._positionPx = lerpPosition(this._positionPx, targetPositionPx, distanceInTiles * TILE_SIZE_PX);
+		const distanceToTargetPx = this._positionPx.distanceTo(targetPositionPx);
+		if (distanceToTargetPx < DRAG_DISTANCE_THRESHOLD_PX) {
+			this.#isBeingDraggedToStart = false;
+			this.#onBeingDraggedComplete?.(false /*cancelled*/);
+		}
+	}
 
-    dragBackwards(onBeingDraggedComplete: () => void) {
-        this.#onBeingDraggedComplete?.(true /*cancelled*/);
-        this.#isBeingDraggedToStart = true;
-        this.#onBeingDraggedComplete = onBeingDraggedComplete;
+	#moveTowardsTarget(distanceInTiles: number) {
+		this.#distanceTraveledInTiles += distanceInTiles;
+		const targetPositionPx = this.#targetTile.scale(TILE_SIZE_PX);
+		this._positionPx = lerpPosition(this._positionPx, targetPositionPx, distanceInTiles * TILE_SIZE_PX);
+		if (this._positionPx.equals(targetPositionPx)) {
+			this.#distanceTraveledInTiles += 1;
+			this.#updateTargetPoint(this.#targetTileIndex + 1);
+		}
+	}
 
-        this.#updateTargetPoint(this._getCurrentPathIndex() - BACKWARDS_DRAG_TILE_COUNT);
-    }
+	#updatePosition() {
+		const distanceInTiles = this.effectiveMoveSpeed * (RENDER_CONTEXT.deltaTimeMs / 1000);
+		if (!this.isBeingDraggedToStart) {
+			this.#moveTowardsTarget(distanceInTiles);
+		} else {
+			this.#updateDragPosition(distanceInTiles);
+		}
+	}
 
-    get isBeingDraggedToStart() {
-        return this.#isBeingDraggedToStart;
-    }
+	dragBackwards(onBeingDraggedComplete: () => void) {
+		this.#onBeingDraggedComplete?.(true /*cancelled*/);
+		this.#isBeingDraggedToStart = true;
+		this.#onBeingDraggedComplete = onBeingDraggedComplete;
 
-    protected _onKilled() {
-        // in case two things damage us in the same frame?
-        this.destroy();
-        PlayerCurrencyContext.value += this.#currencyValue;
-    }
+		this.#updateTargetPoint(this._getCurrentPathIndex() - BACKWARDS_DRAG_TILE_COUNT);
+	}
 
-    damage(amount: number) {
-        this.#health -= amount;
+	get isBeingDraggedToStart() {
+		return this.#isBeingDraggedToStart;
+	}
 
-        if (this.#health <= 0) {
-            this._onKilled();
-        }
-    }
+	protected _onKilled() {
+		// in case two things damage us in the same frame?
+		this.destroy();
+		PlayerCurrencyContext.value += this.#currencyValue;
+	}
 
-    #renderHealthBar() {
-        const healthRatio = this._getHealthRatio();
+	damage(amount: number) {
+		this.#health -= amount;
 
-        const x = this._positionPx.x + HEALTH_BAR_X_OFFSET_PX;
-        const y = this._positionPx.y - HEALTH_BAR_Y_OFFSET_PX;
+		if (this.#health <= 0) {
+			this._onKilled();
+		}
+	}
 
-        CANVAS_CONTEXT.fillStyle = 'red';
-        CANVAS_CONTEXT.fillRect(x, y, HEALTH_BAR_WIDTH_PX, HEALTH_BAR_HEIGHT_PX);
+	#renderHealthBar() {
+		const healthRatio = this._getHealthRatio();
 
-        const greenOffset = HEALTH_BAR_WIDTH_PX * healthRatio;
-        CANVAS_CONTEXT.fillStyle = 'green';
-        CANVAS_CONTEXT.fillRect(x, y, greenOffset, HEALTH_BAR_HEIGHT_PX);
+		const x = this._positionPx.x + HEALTH_BAR_X_OFFSET_PX;
+		const y = this._positionPx.y - HEALTH_BAR_Y_OFFSET_PX;
 
-        CANVAS_CONTEXT.strokeStyle = 'black';
-        CANVAS_CONTEXT.strokeRect(x, y, HEALTH_BAR_WIDTH_PX, HEALTH_BAR_HEIGHT_PX);
-    }
+		CANVAS_CONTEXT.fillStyle = 'red';
+		CANVAS_CONTEXT.fillRect(x, y, HEALTH_BAR_WIDTH_PX, HEALTH_BAR_HEIGHT_PX);
 
-    tick() {
-        this.#updatePosition();
+		const greenOffset = HEALTH_BAR_WIDTH_PX * healthRatio;
+		CANVAS_CONTEXT.fillStyle = 'green';
+		CANVAS_CONTEXT.fillRect(x, y, greenOffset, HEALTH_BAR_HEIGHT_PX);
 
-        const iconPosition = this._positionPx.add({ x: TILE_ICON_OFFSET_PX });
+		CANVAS_CONTEXT.strokeStyle = 'black';
+		CANVAS_CONTEXT.strokeRect(x, y, HEALTH_BAR_WIDTH_PX, HEALTH_BAR_HEIGHT_PX);
+	}
 
-        if (this.isBeingDraggedToStart) {
-            this.#icon.renderWithoutFloating(iconPosition, this.#isMovingLeft);
-        } else {
-            this.#icon.render(iconPosition, this.createTime + this.#floatOffset, this.#isMovingLeft);
-        }
+	#tickMinionSpawn() {
+		if (this.#timeBetweenMinionSpawnsMs == null) {
+			return;
+		}
 
-        this.#renderHealthBar();
-    }
+		this.#minionSpawnTimer -= RENDER_CONTEXT.deltaTimeMs;
 
-    static getEnemiesInTileRange(tile: Point, maxDistanceTiles: number) {
-        return Array.from(EnemyContext.values).filter(enemy => enemy.tile.manhattanDistanceTo(tile) <= maxDistanceTiles);
-    }
+		if (this.#minionSpawnTimer > 0) {
+			return;
+		}
 
-    static getEnemiesInPxRange(positionPx: Point, maxDistancePx: number) {
-        return Array.from(EnemyContext.values).filter(enemy => enemy.tile.scale(TILE_SIZE_PX).distanceTo(positionPx) <= maxDistancePx);
-    }
+		this.#minionSpawnTimer = this.#timeBetweenMinionSpawnsMs;
+
+		const isSlowEnemy = this.#fastMinionSpawnChance == null || Math.random() >= this.#fastMinionSpawnChance;
+		const isOnCurrentTile = this.#currentTileMinionSpawnChance != null && Math.random() >= this.#currentTileMinionSpawnChance;
+
+		const minion = isSlowEnemy ? EnemyPathMover.#slowMinion : EnemyPathMover.#fastMinion;
+		const targetTileIndex = isOnCurrentTile ? this.#targetTileIndex : 0;
+		minion(targetTileIndex);
+	}
+
+	tick() {
+		this.#updatePosition();
+		this.#tickMinionSpawn();
+
+		const iconPosition = this._positionPx.add({ x: TILE_ICON_OFFSET_PX });
+
+		if (this.isBeingDraggedToStart) {
+			this.#icon.renderWithoutFloating(iconPosition, this.#isMovingLeft);
+		} else {
+			this.#icon.render(iconPosition, this.createTime + this.#floatOffset, this.#isMovingLeft);
+		}
+
+		this.#renderHealthBar();
+	}
+
+	static getEnemiesInTileRange(tile: Point, maxDistanceTiles: number) {
+		return Array.from(EnemyContext.values).filter(enemy => enemy.tile.manhattanDistanceTo(tile) <= maxDistanceTiles);
+	}
+
+	static getEnemiesInPxRange(positionPx: Point, maxDistancePx: number) {
+		return Array.from(EnemyContext.values).filter(enemy => enemy.tile.scale(TILE_SIZE_PX).distanceTo(positionPx) <= maxDistancePx);
+	}
+
+	static initMinions(slow: (initialPathIndex?: number) => EnemyPathMover, fast: (initialPathIndex?: number) => EnemyPathMover) {
+		EnemyPathMover.#slowMinion = slow;
+		EnemyPathMover.#fastMinion = fast;
+	}
 }

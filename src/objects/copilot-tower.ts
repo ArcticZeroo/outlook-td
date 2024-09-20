@@ -20,26 +20,26 @@ interface ICopilotTowerTier extends ITowerTierBase {
 const TIER_VALUES: ICopilotTowerTier[] = [
 	{
 		damage:                3,
-		range:                 1.75,
-		secondsBetweenBullets: 7,
+		range:                 2,
+		secondsBetweenBullets: 6,
 		maxTargetCount:        2,
 	},
 	{
 		damage:                3,
-		range:                 2,
-		secondsBetweenBullets: 6,
+		range:                 2.25,
+		secondsBetweenBullets: 5.5,
 		maxTargetCount:        3,
 	},
 	{
 		damage:                4,
 		range:                 2.5,
-		secondsBetweenBullets: 5.5,
+		secondsBetweenBullets: 5,
 		maxTargetCount:        3,
 	},
 	{
 		damage:                5,
 		range:                 2.5,
-		secondsBetweenBullets: 5.25,
+		secondsBetweenBullets: 4.5,
 		maxTargetCount:        5,
 	},
 ]

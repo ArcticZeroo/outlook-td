@@ -32,13 +32,13 @@ const TIER_VALUES: ITowerTierBase[] = [
     },
     {
         damage: 1,
-        range: 1.5,
-        secondsBetweenBullets: 1.2
+        range: 1.25,
+        secondsBetweenBullets: 1.3
     },
     {
         damage: 2,
-        range: 1.75,
-        secondsBetweenBullets: 1
+        range: 1.5,
+        secondsBetweenBullets: 1.15
     }
 ];
 

@@ -11,26 +11,26 @@ interface ISpearPhishermanTowerTier extends ITowerTierBase {
 
 const TIER_VALUES: ISpearPhishermanTowerTier[] = [
 	{
-		damage:                3,
-		range:                 1.5,
+		damage:                2,
+		range:                 1.25,
 		secondsBetweenBullets: 6,
 		spearMaxEnemiesHit:    2,
 		spearMaxDistanceTiles: 4,
 		spearSpeed:            4
 	},
 	{
-		damage:                4,
-		range:                 2,
+		damage:                3,
+		range:                 1.5,
 		secondsBetweenBullets: 5.5,
 		spearMaxEnemiesHit:    3,
 		spearMaxDistanceTiles: 4,
 		spearSpeed:            5
 	},
 	{
-		damage:                5,
-		range:                 2.25,
+		damage:                4,
+		range:                 2,
 		secondsBetweenBullets: 5,
-		spearMaxEnemiesHit:    4,
+		spearMaxEnemiesHit:    3,
 		spearMaxDistanceTiles: 5,
 		spearSpeed:            6
 	},

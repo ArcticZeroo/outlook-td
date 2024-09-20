@@ -33,6 +33,11 @@ button:disabled {
     filter: opacity(0.75) grayscale(0.5);
 }
 
+header #link {
+    font-size: 1.3em;
+    color: white;
+}
+
 #app {
     display: flex;
     flex-direction: column;

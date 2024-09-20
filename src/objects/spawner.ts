@@ -4,6 +4,11 @@ import { EnemyContext } from '../context/enemies.ts';
 import { RENDER_CONTEXT } from '../context/render.ts';
 import { LivingRenderObject } from './object.ts';
 import { CurrentWaveContext } from '../context/wave.ts';
+import { allEnemies } from '../constants/enemies.ts';
+import { choice } from '../util/random.ts';
+
+const MIN_TIME_BETWEEN_RANDOM_ENEMIES_MS = 2_000;
+const MAX_TIME_BETWEEN_RANDOM_ENEMIES_MS = 8_000;
 
 export class Spawner extends LivingRenderObject {
     #currentWaveIndex = 0;
@@ -34,7 +39,8 @@ export class Spawner extends LivingRenderObject {
         }
 
         if (this.#currentWaveIndex >= waves.length) {
-            // todo: random enemy
+            this.#timer = Math.random() * (MAX_TIME_BETWEEN_RANDOM_ENEMIES_MS - MIN_TIME_BETWEEN_RANDOM_ENEMIES_MS) + MIN_TIME_BETWEEN_RANDOM_ENEMIES_MS;
+            choice(allEnemies)();
             return;
         }
 

@@ -15,3 +15,13 @@ export const writeOutlineText = (text: string, x: number, y: number) => {
 export const translate = (amount: Point) => {
     CANVAS_CONTEXT.translate(amount.x, amount.y);
 }
+
+export const drawCircle = (center: Point, radius: number, stroke: boolean = false) => {
+    CANVAS_CONTEXT.beginPath();
+    CANVAS_CONTEXT.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+    CANVAS_CONTEXT.fill();
+    if (stroke) {
+        CANVAS_CONTEXT.stroke();
+    }
+    CANVAS_CONTEXT.closePath();
+}
