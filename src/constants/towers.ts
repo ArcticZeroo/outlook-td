@@ -28,14 +28,14 @@ export const towers: ITowerDisplayData[] = [
     {
         name:        'Spear Phisherman',
         description: 'A tower that sends a spear to pierce through multiple enemies.',
-        cost:        135,
+        cost:        155,
         iconPath:    SpearPhishermanSvg,
         constructor: SpearPhishermanTower
     },
     {
         name:        'Apple Cannon',
         description: 'Shoots explosive apples that can damage multiple enemies at once',
-        cost:        150,
+        cost:        130,
         iconPath:    AppleCannonSvg,
         constructor: AppleCannonTower
     },

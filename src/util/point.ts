@@ -54,6 +54,16 @@ export class Point {
         return Math.abs(this.#x - other.x) + Math.abs(this.#y - other.y);
     }
 
+    unitVectorTo(other: Point): Point {
+        return other.subtract(this).normalize();
+    }
+
+    rotate(angleRadians: number) {
+        const x = this.#x * Math.cos(angleRadians) - this.#y * Math.sin(angleRadians);
+        const y = this.#x * Math.sin(angleRadians) + this.#y * Math.cos(angleRadians);
+        return new Point({ x, y });
+    }
+
     angleTo(other: Point): number {
         return Math.atan2(other.y - this.#y, other.x - this.#x);
     }

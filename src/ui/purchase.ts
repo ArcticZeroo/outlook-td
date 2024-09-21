@@ -12,6 +12,8 @@ import { SelectedPlaceTowerContext, SelectedUpgradeTowerContext } from '../conte
 import { GameStateContext } from '../context/game-state.ts';
 import { GameState } from '../models/game.ts';
 
+const towersSortedByCost = [...towers].sort((a, b) => a.cost - b.cost);
+
 export const registerTowersView = () => {
 	const towersElement = Views.towerList;
 
@@ -31,7 +33,7 @@ export const registerTowersView = () => {
 		}
 	});
 
-	for (const tower of towers) {
+	for (const tower of towersSortedByCost) {
 		const towerGroupElement = document.createElement('div');
 		towerGroupElement.className = 'tower rounded-container';
 		towerGroupElement.title = `Click to select the ${tower.name} tower.`;

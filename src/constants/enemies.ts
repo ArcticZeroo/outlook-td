@@ -2,6 +2,9 @@ import MailIcon from '../assets/mail.svg';
 import MalwareIcon from '../assets/malware.svg';
 import SpamMailIcon from '../assets/spam-mail.svg';
 import PlaneIcon from '../assets/plane.svg';
+import CustomerIcon from '../assets/customer.svg';
+import ManagerIcon from '../assets/manager.svg';
+import TeamsIcon from '../assets/teams.svg';
 import { EnemyPathMover } from '../objects/enemy-path-mover.ts';
 import { MalwareEnemy } from '../objects/malware-enemy.ts';
 import { SpamEmailEnemy } from '../objects/spam-email-enemy.ts';
@@ -29,7 +32,7 @@ export const teamsMeetingEnemy = () => new EnemyPathMover({
 	lives:         30, // a "short meeting"
 	health:        15,
 	currencyValue: 15,
-	iconPath:      './teams-meeting-icon.png',
+	iconPath:      TeamsIcon,
 });
 
 export const managerEnemy = () => new EnemyPathMover({
@@ -37,18 +40,18 @@ export const managerEnemy = () => new EnemyPathMover({
 	lives:                     60, // 1-hour manager meeting
 	health:                    55,
 	currencyValue:             30,
-	iconPath:                  './manager-icon.png',
+	iconPath:                  ManagerIcon,
 	timeBetweenMinionSpawnsMs: 8_000,
 	fastMinionSpawnChance:     0.1
 });
 
-export const walmartEnemy = () => new EnemyPathMover({
+export const customerEscalationEnemy = () => new EnemyPathMover({
 	moveSpeed:                 0.05,
-	lives:                     60 * 4, // 4-hour walmart escalation
+	lives:                     60 * 4, // 4-hour customer escalation
 	health:                    200,
 	currencyValue:             85,
-	iconPath:                  './walmart-icon.png',
-	timeBetweenMinionSpawnsMs: 4_000,
+	iconPath:                  CustomerIcon,
+	timeBetweenMinionSpawnsMs: 3_000,
 	fastMinionSpawnChance:     0.2
 });
 
@@ -74,7 +77,7 @@ export const allEnemies = [
 	planeEnemy,
 	managerEnemy,
 	teamsMeetingEnemy,
-	walmartEnemy,
+	customerEscalationEnemy,
 	spamMailEnemy(2),
 	spamMailEnemy(3),
 	malwareEnemy,

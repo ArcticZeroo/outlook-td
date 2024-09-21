@@ -3,12 +3,15 @@ import { PlayerCurrencyContext } from '../context/currency.ts';
 import { EnemyContext } from '../context/enemies.ts';
 import { RENDER_CONTEXT } from '../context/render.ts';
 import { LivingRenderObject } from './object.ts';
-import { CurrentWaveContext } from '../context/wave.ts';
+import { CurrentWaveContext, TotalWaveContext } from '../context/wave.ts';
 import { allEnemies } from '../constants/enemies.ts';
 import { choice } from '../util/random.ts';
 
 const MIN_TIME_BETWEEN_RANDOM_ENEMIES_MS = 2_000;
 const MAX_TIME_BETWEEN_RANDOM_ENEMIES_MS = 8_000;
+
+// this is dumb, but there's a circular dependency issue when including waves from the wave object
+TotalWaveContext.value = waves.length;
 
 export class Spawner extends LivingRenderObject {
     #currentWaveIndex = 0;

@@ -1,6 +1,6 @@
 import { EnemyPathMover, IEnemyPathMoverConstructor } from './enemy-path-mover.ts';
 
-const SPEED_INCREASE_PER_SPLIT = 1.15
+const SPEED_INCREASE_PER_SPLIT = 1.1
 
 interface ISpamEmailEnemyConstructor extends Omit<IEnemyPathMoverConstructor, 'lives' | 'health'> {
     originalSplitCount?: number;
@@ -60,7 +60,7 @@ export class SpamEmailEnemy extends EnemyPathMover {
         for (let i = 0; i < 2; i++) {
             const childTargetTileIndex = currentPathIndex - (i + 1) + offset;
             new SpamEmailEnemy({
-                moveSpeed:           this.moveSpeed * SPEED_INCREASE_PER_SPLIT,
+                moveSpeed:           this._unscaledMoveSpeed * SPEED_INCREASE_PER_SPLIT,
                 iconPath:            this.iconPath,
                 currencyValue:       this.currencyValue,
                 remainingSplitCount: this.#remainingSplitCount - 1,

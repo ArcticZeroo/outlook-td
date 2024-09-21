@@ -1,4 +1,4 @@
-import { TILE_SIZE_PX } from '../constants/grid.ts';
+import { TILE_ICON_OFFSET_PX, TILE_SIZE_PX } from '../constants/grid.ts';
 import { addRenderObject, removeRenderObject } from '../context/objects.ts';
 import { RENDER_CONTEXT } from '../context/render.ts';
 import { positionPxToTile } from '../util/grid.ts';
@@ -30,6 +30,10 @@ export abstract class LivingRenderObject {
 
     get positionPx(): Point {
         return this._positionPx;
+    }
+
+    get iconCenterPx(): Point {
+        return this.positionPx.add({ x: (TILE_SIZE_PX / 2) + TILE_ICON_OFFSET_PX, y: TILE_SIZE_PX / 2 });
     }
 
     get isAlive() {
